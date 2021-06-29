@@ -1,0 +1,69 @@
+#!/usr/bin/perl -s
+
+# split-gpx filename lat lon
+
+$argFile = $ARGV[0]; $argLat = $ARGV[1]; $argLon = $ARGV[2];
+
+$findRangeMeter = 50;
+
+$pi = 3.1415927;
+$rMeterEarth = 6378150;
+$degPerMeter = 360 / (2 * $pi * $rMeterEarth);
+$degFindRange = $degPerMeter * $findRangeMeter;
+
+$snBase = &getBaseFileName($argFile);
+
+$snOutFile1 = $snBase."f.gpx";
+$snOutFile2 = $snBase."g.gpx";
+
+open(GPSFILE, "<$argFile");
+open(OUTFILE1, ">$snOutFile1");
+open(OUTFILE2, ">$snOutFile2");
+$found = 0;
+while(<GPSFILE>) { s/\r//g; s/\n//g;
+  unless(m/<trkpt\s.*lat="([^"]+)".*lon="([^"]+)"/) {
+    print OUTFILE1 "$_\n"; print OUTFILE2 "$_\n";
+    if($debug) { print STDERR "1<<$_>>\n"; }
+    next;
+  }
+  $lat = $1; $lon = $2;
+  if(m/^(.+)(<trkpt\s.*)$/) {
+    $head = $1; $_ = $2;
+    if($debug) { print STDERR "21<<$head>>\n22<<$_>>\n"; }
+    print OUTFILE1 "$head\n"; print OUTFILE2 "$head\n";
+  }
+  if(0 == $found) {
+    if($degFindRange ** 2 > ($argLat - $lat) ** 2 + ($argLon - $lon) ** 2)
+      { $found = 1; }
+  }
+  if(1 == $found)
+    { print OUTFILE2 "$_\n"; }
+  else
+    { print OUTFILE1 "$_\n"; }
+}
+close(GPSFILE);
+close(OUTFILE1);
+close(OUTFILE2);
+
+sub getBaseFileName {
+  local($path) = shift;
+  local($i); local($c) = 0; local($p) = 0; local($s);
+
+  for($i = 0; $i < length($path); $i++) {
+    $s = substr($path, $i, 1);
+    if($s =~ m/[\x81-\x9f\xe0-\xfc]/)
+      { $i++; next; }
+    if($s eq '\\')
+      { $c = $i + 1; }
+    if($s eq '.')
+      { $p = $i; }
+  }
+  #$path =~ s/([\x81-\x9f\xe0-\xfc])\\/${1}BaCkSlAsH/g;
+  #$path =~ m/([^\\]*)\.[a-zA-Z0-9]+$/;
+  #$path = $1;
+  #$path =~ s/BaCkSlAsH/\\/g;
+  #print STDERR "$path, $c, $p\n";
+  return(substr($path, $c, $p - $c));
+}
+
+#########1#########2#########3#########4#########5#########6#########7
