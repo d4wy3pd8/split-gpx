@@ -18,3 +18,5 @@ $ perl split-gpx2 20210605111759g.gpx 35.659673° 139.532915°
 
 どの道通った
 https://matchansk.sakura.ne.jp/gpsc/
+
+These scripts split your gpx file at the point you specify with its latitude and longitude.
