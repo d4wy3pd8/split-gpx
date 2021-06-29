@@ -20,3 +20,20 @@ $ perl split-gpx2 20210605111759g.gpx 35.659673° 139.532915°
 https://matchansk.sakura.ne.jp/gpsc/
 
 These scripts split your gpx file at the point you specify with its latitude and longitude.
+
+I want to use for "WhichWay" from this place because I've never driven from here:
+
+$ perl split-gpx 20210605111759.gpx 35.549297° 139.534828°
+
+Specify the latitude and longitude of the place at which you want to split.
+You can get the values by copying them from the GPX Viewer of Android.
+This script splits the input file at the point where the GPS point is entered inside 50 meters from your specified point.
+
+I do not want to use for "WhichWay" from this placce because I've already driven from here:
+
+$ perl split-gpx2 20210605111759g.gpx 35.659673° 139.532915°
+
+This script splits the input file at the point where the GPS point enter and exit the 50 meters circle from your specified point.
+
+WhichWay
+https://webpageclonemaker.com/gpsc/
